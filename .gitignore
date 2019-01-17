@@ -2,3 +2,5 @@
 .idea
 cache
 push.sh
+app/app.log
+app/__pycache__
