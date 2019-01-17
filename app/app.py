@@ -3,14 +3,19 @@ import time
 import random
 import os
 import string
+from pathlib import Path
 
 log_file = 'app.log'
+
 n = 0
-
-if os.path.exists(log_file):
-    os.remove(log_file)
-
 app = Bottle()
+
+
+def recreate_log(f):
+    if os.path.exists(f):
+        os.remove(f)
+    Path(f).touch()
+
 
 
 def generate_line():
@@ -34,13 +39,16 @@ def write_log(log_file, s):
     f.close()
 
 
+
+recreate_log(log_file)
+
 @app.route('/')
 @app.route('/hello')
 def hello():
-    time.sleep(5)
+    time.sleep(2)
     s = generate_line()
     write_log(log_file, s)
     return s + generate_text()
 
 
-run(app, host='0.0.0.0', port=8080)
+run(app, host='0.0.0.0', port=8080, quiet=True)
