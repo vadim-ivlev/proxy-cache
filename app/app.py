@@ -45,7 +45,7 @@ recreate_log(log_file)
 @app.route('/')
 @app.route('/hello')
 def hello():
-    time.sleep(2)
+    time.sleep(1)
     s = generate_line()
     write_log(log_file, s)
     return s + generate_text()
