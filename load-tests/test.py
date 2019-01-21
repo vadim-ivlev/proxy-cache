@@ -5,7 +5,7 @@ import requests
 
 # Тестируемый URL
 
-url = 'http://localhost:5555/'
+url = 'http://localhost:5555/hello'
 
 # время тестирования в секундах
 test_time = 30.0
