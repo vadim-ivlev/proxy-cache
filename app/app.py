@@ -3,6 +3,7 @@ import time
 import random
 import os
 import string
+import sys
 from pathlib import Path
 
 log_file = 'app.log'
@@ -23,7 +24,7 @@ def generate_line():
 
     n += 1
     t = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    return f'{n:<10}  {t} \n'
+    return f'{n:<10}  {t}\n'
 
 
 def generate_text(size=100, chars=string.ascii_uppercase):
@@ -48,7 +49,7 @@ def hello():
     time.sleep(1)
     s = generate_line()
     write_log(log_file, s)
-    return s + generate_text()
+    return '<pre>' +s + str(sys.version_info) + '\n'+ generate_text() + '</pre>'
 
 
 run(app, host='0.0.0.0', port=8080, quiet=True)

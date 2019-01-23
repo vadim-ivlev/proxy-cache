@@ -36,32 +36,28 @@ type Totals struct {
 }
 
 var summaryChannel chan Summary
-var total Totals
 
 func main() {
 	summaryChannel = make(chan Summary, 100)
 	defer close(summaryChannel)
-	total := Totals{}
 
 	start_time = time.Now()
 
-	go analyze(&total)
+	go analyze()
 
 	for i := 0; i < n_clients; i++ {
 		go request(i)
 		time.Sleep(time.Second)
 	}
-	fmt.Println("Plain ++++++++++++++++++++++++++++++")
-
+	fmt.Println("Plain ++++++++++++++++++++++++++++ n_clients = ", n_clients)
 	time.Sleep(test_time)
-	PrintTotals(total)
-	fmt.Println("Good bye")
+
 }
 
-func analyze(total *Totals) {
+func analyze() {
 	i := 0
-	seconds := 0
-	total1 := Totals{}
+	seconds := 0.0
+	total := Totals{}
 
 	for {
 		i++
@@ -71,21 +67,14 @@ func analyze(total *Totals) {
 		total.bytes += s.contentLength
 		total.count += 1
 
-		total1.bytes += s.contentLength
-		total1.count += 1
-
 		if s.statusCode != 200 {
 			total.errors += 1
-			total1.errors += 1
-
-			// fmt.Printf("%5d time:%5.2f  id_count=%3d_%04d  %4d  %8s  %5.2f ms  %4d b \n",
-			// 	i, t, s.requesterId, s.count, s.statusCode, s.cacheStatus, s.responseTime, s.contentLength)
 		}
 
-		if int(t) != seconds {
-			PrintTotals(total1)
-			seconds = int(t)
-			total1 = Totals{}
+		if t-seconds > 1.0 {
+			fmt.Printf("%#v\n", total)
+			seconds = t
+			total = Totals{}
 		}
 
 	}
@@ -94,17 +83,10 @@ func analyze(total *Totals) {
 
 }
 
-func PrintTotals(t Totals) {
-	// fmt.Print("count: %d  errors, t.bytes", t.count, t.errors, t.bytes)
-	fmt.Printf("%#v\n", t)
-}
-
 func request(id int) {
 	i := 0
 	for true {
 		i++
-		time.Sleep(sleep_time)
-
 		t0 := time.Now()
 		r, err := http.Get(url)
 		t1 := time.Now()
@@ -123,5 +105,6 @@ func request(id int) {
 		}
 		r.Body.Close()
 		summaryChannel <- rs
+		time.Sleep(sleep_time)
 	}
 }
