@@ -49,6 +49,7 @@ def hello():
     time.sleep(1)
     s = generate_line()
     write_log(log_file, s)
+    print(s)
     return '<pre>' +s + str(sys.version_info) + '\n'+ generate_text() + '</pre>'
 
 

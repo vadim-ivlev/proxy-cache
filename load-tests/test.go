@@ -10,15 +10,13 @@ import (
 var url = "http://localhost:5555/"
 
 // # время тестирования в секундах
-var test_time = 10 * time.Second
+var test_time = 180 * time.Second
 
 // # задержка между запросами
 var sleep_time = 10 * time.Millisecond
 
 // количество клиентов
 var n_clients = 10
-
-var start_time time.Time
 
 type Summary struct {
 	requesterId   int
@@ -29,32 +27,31 @@ type Summary struct {
 	contentLength int64
 }
 
-type Totals struct {
-	count  int
-	errors int
-	bytes  int64
-}
-
 var summaryChannel chan Summary
 
 func main() {
-	summaryChannel = make(chan Summary, 100)
+	summaryChannel = make(chan Summary)
 	defer close(summaryChannel)
 
-	start_time = time.Now()
-
-	go analyze()
+	go analyze(time.Now())
 
 	for i := 0; i < n_clients; i++ {
 		go request(i)
-		time.Sleep(time.Second)
+		time.Sleep(time.Second / 2)
 	}
 	fmt.Println("Plain ++++++++++++++++++++++++++++ n_clients = ", n_clients)
 	time.Sleep(test_time)
 
 }
 
-func analyze() {
+// analyze reads summaryChannel and once a second prints out totals for the last second.
+func analyze(start_time time.Time) {
+	type Totals struct {
+		count  int
+		errors int
+		bytes  int64
+	}
+
 	i := 0
 	seconds := 0.0
 	total := Totals{}
@@ -83,6 +80,7 @@ func analyze() {
 
 }
 
+// request requests the server and pushes results into summaryChannel
 func request(id int) {
 	i := 0
 	for true {
@@ -100,10 +98,10 @@ func request(id int) {
 			rs.statusCode = r.StatusCode
 			rs.cacheStatus = r.Header["X-Cache-Status"][0]
 			rs.contentLength = r.ContentLength
+			r.Body.Close()
 		} else {
 			// fmt.Println(err.Error())
 		}
-		r.Body.Close()
 		summaryChannel <- rs
 		time.Sleep(sleep_time)
 	}
