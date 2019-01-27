@@ -1,7 +1,7 @@
 // run with
 // go test -v  mutex_test.go
 
-package blabla
+package main
 
 import (
 	"fmt"

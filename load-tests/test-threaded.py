@@ -5,10 +5,10 @@ import requests
 
 
 # Тестируемый URL
-url: str = "http://localhost:5555/"
+url: str = "http://localhost:5555/hello"
 
 # время тестирования sec
-test_time: int = 180
+test_time: int = 5
 
 # задержка между запросами sec
 request_interval: float = 0.1
@@ -57,7 +57,7 @@ def request():
         try:
             r: requests.Response = requests.get(url)
         except requests.RequestException as e:
-            # print("EXP ", str(e))
+            print("EXP ", str(e))
             totals.inc_errors(1)
             continue
 
@@ -96,7 +96,7 @@ def main():
     threads.append(threading.Thread(target=printTotals))
 
     for i in range(num_clients):
-        threads.append(threading.Thread( target=request))
+        threads.append(threading.Thread(target=request))
 
     for t in threads:
         t.start()
@@ -104,7 +104,6 @@ def main():
     for t in threads:
         t.join()
 
-    # time.sleep(test_time+1)
 
     print('------------------------------------')
     updateTotals()

@@ -10,13 +10,13 @@ import (
 var url = "http://localhost:5555/"
 
 // # время тестирования в секундах
-var test_time = 180 * time.Second
+var test_time = 10 * time.Second
 
 // # задержка между запросами
-var sleep_time = 10 * time.Millisecond
+var request_interval = time.Second / 100
 
 // количество клиентов
-var n_clients = 10
+var num_clients = 100
 
 type Summary struct {
 	requesterId   int
@@ -35,11 +35,11 @@ func main() {
 
 	go analyze(time.Now())
 
-	for i := 0; i < n_clients; i++ {
+	for i := 0; i < num_clients; i++ {
 		go request(i)
-		time.Sleep(time.Second / 2)
+		time.Sleep(time.Duration(float64(time.Second) * (5.0 / float64(num_clients))))
 	}
-	fmt.Println("Plain ++++++++++++++++++++++++++++ n_clients = ", n_clients)
+	fmt.Println("Plain ++++++++++++++++++++++++++++ num_clients = ", num_clients)
 	time.Sleep(test_time)
 
 }
@@ -103,6 +103,6 @@ func request(id int) {
 			// fmt.Println(err.Error())
 		}
 		summaryChannel <- rs
-		time.Sleep(sleep_time)
+		time.Sleep(request_interval)
 	}
 }
