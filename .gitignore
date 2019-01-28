@@ -3,4 +3,4 @@
 cache
 push.sh
 app/app.log
-app/__pycache__
+__pycache__

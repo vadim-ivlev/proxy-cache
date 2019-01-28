@@ -5,12 +5,13 @@ import (
 	"sync"
 )
 
-// """ Totals class accumulates results of responses """
+// Totals class accumulates results of responses
+// from the system being tested.
 type Totals struct {
 	sync.Mutex
-	count  int
-	errors int
-	bytes  int64
+	count  int   // number of successful responses
+	errors int   // number of errors
+	bytes  int64 // total number of received bytes
 }
 
 func (t *Totals) inc_count(v int) {
